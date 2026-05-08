@@ -11,6 +11,8 @@
   "dependencies": {
     "@ai-sdk/google": "^3.0.70",
     "@ai-sdk/groq": "^3.0.39",
+    "@ai-sdk/google": "^3.0.70",
+    "@ai-sdk/groq": "^3.0.39",
     "@ai-sdk/react": "^3.0.177",
     "@hookform/resolvers": "^3.9.1",
     "@radix-ui/react-accordion": "1.2.12",
@@ -74,3 +76,4 @@
     "typescript": "5.7.3"
   }
 }
+
