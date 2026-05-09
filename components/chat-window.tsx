@@ -1,12 +1,13 @@
 'use client'
 
-import { useRef, useEffect } from 'react'
+import { useRef, useEffect, useState } from 'react'
 import { useChat } from '@ai-sdk/react'
 import { DefaultChatTransport } from 'ai'
 import { ChatMessage, TypingIndicator } from '@/components/chat-message'
 import { ChatInput } from '@/components/chat-input'
 import { Bot, Sparkles, Zap } from 'lucide-react'
 import { providers } from '@/components/chat-sidebar'
+import { getApiKeys, getOrCreateSessionId } from '@/lib/supabase-client'
 
 interface ChatWindowProps {
   selectedProvider: string
@@ -21,15 +22,33 @@ const providerIcons: Record<string, typeof Sparkles> = {
 
 export function ChatWindow({ selectedProvider, selectedModel, onToggleSidebar }: ChatWindowProps) {
   const scrollRef = useRef<HTMLDivElement>(null)
-  
+  const [apiKeys, setApiKeys] = useState<{ groq_api_key: string | null; google_api_key: string | null }>({
+    groq_api_key: null,
+    google_api_key: null,
+  })
+
   const provider = providers.find(p => p.id === selectedProvider)
   const modelInfo = provider?.models.find(m => m.id === selectedModel)
   const ModelIcon = providerIcons[selectedProvider] || Sparkles
 
+  useEffect(() => {
+    const fetchKeys = async () => {
+      const sessionId = await getOrCreateSessionId()
+      const keys = await getApiKeys(sessionId)
+      setApiKeys(keys)
+    }
+    fetchKeys()
+  }, [])
+
   const { messages, sendMessage, status, setMessages } = useChat({
-    transport: new DefaultChatTransport({ 
+    transport: new DefaultChatTransport({
       api: '/api/chat',
-      body: { provider: selectedProvider, model: selectedModel },
+      body: {
+        provider: selectedProvider,
+        model: selectedModel,
+        groqApiKey: apiKeys.groq_api_key,
+        googleApiKey: apiKeys.google_api_key,
+      },
     }),
   })
 
@@ -47,7 +66,17 @@ export function ChatWindow({ selectedProvider, selectedModel, onToggleSidebar }:
   }, [selectedProvider, selectedModel, setMessages])
 
   const handleSend = (text: string) => {
-    sendMessage({ text }, { body: { provider: selectedProvider, model: selectedModel } })
+    sendMessage(
+      { text },
+      {
+        body: {
+          provider: selectedProvider,
+          model: selectedModel,
+          groqApiKey: apiKeys.groq_api_key,
+          googleApiKey: apiKeys.google_api_key,
+        },
+      }
+    )
   }
 
   return (

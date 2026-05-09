@@ -51,13 +51,15 @@ interface ChatSidebarProps {
   selectedModel: string
   onSelectModel: (provider: string, model: string) => void
   onNewChat: () => void
+  onOpenSettings?: () => void
 }
 
-export function ChatSidebar({ 
-  selectedProvider, 
-  selectedModel, 
-  onSelectModel, 
-  onNewChat 
+export function ChatSidebar({
+  selectedProvider,
+  selectedModel,
+  onSelectModel,
+  onNewChat,
+  onOpenSettings,
 }: ChatSidebarProps) {
   const [expandedProvider, setExpandedProvider] = useState<string | null>(selectedProvider)
 
@@ -209,9 +211,12 @@ export function ChatSidebar({
           <History className="w-4 h-4 shrink-0" />
           <span className="text-sm truncate">History</span>
         </button>
-        <button className="w-full p-2 rounded-lg text-left flex items-center gap-3 text-muted-foreground hover:text-sidebar-foreground hover:bg-sidebar-accent transition-colors">
+        <button
+          onClick={onOpenSettings}
+          className="w-full p-2 rounded-lg text-left flex items-center gap-3 text-muted-foreground hover:text-sidebar-foreground hover:bg-sidebar-accent transition-colors"
+        >
           <Settings className="w-4 h-4 shrink-0" />
-          <span className="text-sm truncate">Settings</span>
+          <span className="text-sm truncate">API Keys</span>
         </button>
       </div>
 

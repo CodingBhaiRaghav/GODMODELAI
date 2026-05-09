@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { ChatSidebar } from '@/components/chat-sidebar'
 import { ChatWindow } from '@/components/chat-window'
+import { ApiKeysModal } from '@/components/api-keys-modal'
 import { Menu, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
@@ -12,6 +13,7 @@ export default function Home() {
   const [selectedModel, setSelectedModel] = useState('gemini-2.5-flash')
   const [chatKey, setChatKey] = useState(0)
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [apiKeysModalOpen, setApiKeysModalOpen] = useState(false)
 
   const handleSelectModel = (provider: string, model: string) => {
     setSelectedProvider(provider)
@@ -50,20 +52,30 @@ export default function Home() {
         'lg:translate-x-0',
         sidebarOpen ? 'translate-x-0' : '-translate-x-full'
       )}>
-        <ChatSidebar 
+        <ChatSidebar
           selectedProvider={selectedProvider}
           selectedModel={selectedModel}
           onSelectModel={handleSelectModel}
           onNewChat={handleNewChat}
+          onOpenSettings={() => setApiKeysModalOpen(true)}
         />
       </div>
 
       {/* Chat Window */}
-      <ChatWindow 
-        key={chatKey} 
+      <ChatWindow
+        key={chatKey}
         selectedProvider={selectedProvider}
         selectedModel={selectedModel}
         onToggleSidebar={() => setSidebarOpen(true)}
+      />
+
+      {/* API Keys Modal */}
+      <ApiKeysModal
+        open={apiKeysModalOpen}
+        onOpenChange={setApiKeysModalOpen}
+        onKeysSaved={() => {
+          setChatKey((prev) => prev + 1)
+        }}
       />
     </div>
   )
